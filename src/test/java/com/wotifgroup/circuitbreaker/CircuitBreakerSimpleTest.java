@@ -63,7 +63,7 @@ public class CircuitBreakerSimpleTest {
         cb.recordFailure();
         assertEquals(cb.getState(), CircuitBreakerStatus.OPEN);
         //todo - check timeout correctly applied
-//        assertEquals(cb.getNextAttemptStart, CircuitBreakerStatus.OPEN);
+//        assertEquals(cb.getNextAttemptStart, CircuitBreakerStatus.java.OPEN);
 
     }
 

@@ -1,7 +1,9 @@
-package com.wg.circuitbreaker;
+package com.wotifgroup.circuitbreaker;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 /**
  * Simple Circuit Breaker based on the pattern in <a href="http://www.pragprog.com/titles/mnee">Release It!</a>
  * Which was also based on the Leaky Bucket Patter from PLOP 2.
@@ -31,7 +33,7 @@ import org.apache.log4j.Logger;
 public class CircuitBreakerSimple implements CircuitBreaker {
 
     private int failureThreshold = 5;
-    private int failureCount = 0;
+    private AtomicInteger failureCount = new AtomicInteger(0);
     private CircuitBreakerStatus state;
     private int timeout = 30000;
     private Logger LOG = LogManager.getLogger(CircuitBreakerSimple.class);
@@ -57,30 +59,29 @@ public class CircuitBreakerSimple implements CircuitBreaker {
     /**
      * record Failure
      * if Closed then failureCount++
-     * if HalfOpen then go to open
-     * if
+     * if HalfOpen then go back to open
      *
      * @return
      */
     public int recordFailure() {
         if (isClosed() || isHalfOpen()) {
-            failureCount++;
+            failureCount.incrementAndGet();
         }
 
         if (LOG.isTraceEnabled()) {
             LOG.trace("failure count:" + failureCount);
         }
 
-        if (isClosed() && (failureCount > failureThreshold)) {
+        if (isClosed() && (failureCount.intValue() > failureThreshold)) {
             tripBreaker();
-            return failureCount;
+            return failureCount.intValue();
         }
 
         if (isHalfOpen()) {
             tripBreaker();
         }
 
-        return failureCount;
+        return failureCount.intValue();
     }
 
     void setState(CircuitBreakerStatus state) {
@@ -100,7 +101,7 @@ public class CircuitBreakerSimple implements CircuitBreaker {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Circuit Breaker reset");
         }
-        failureCount = 0;
+        failureCount.getAndSet(0);
     }
 
     public void tripBreaker() {
@@ -116,7 +117,7 @@ public class CircuitBreakerSimple implements CircuitBreaker {
     }
 
     public int getFailureCount() {
-        return failureCount;
+        return failureCount.intValue();
     }
 
     public int getTimeout() {
@@ -133,10 +134,10 @@ public class CircuitBreakerSimple implements CircuitBreaker {
             return;
         }
 
-        if (isClosed() && failureCount > 0) {
-            failureCount = 0;
+        if (isClosed() && failureCount.intValue() > 0) {
+            failureCount.getAndSet(0);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("failure count reset to: " + failureCount);
+                LOG.debug("failure count reset. ");
             }
         }
     }

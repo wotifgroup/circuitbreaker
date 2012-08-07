@@ -1,4 +1,4 @@
-package com.wg.circuitbreaker;
+package com.wotifgroup.circuitbreaker;
 
 public interface CircuitBreaker {
 

@@ -2,7 +2,7 @@
 Based on Michael Nygard's work from Release It!
 
 # Interesting about CB
-- Ensure distributed communications are time bound
+- Ensure distributed communications are time bound so you can avoid Cascading Failures
 - Policies determine the failure state handling, the testing during half-open state
 - Failure hanlding if OPEN is managed by the callee
 
@@ -18,6 +18,9 @@ Based on Michael Nygard's work from Release It!
 - publish state, or publish gauge of state change
 - report outage times
 - publish states to zookeeper
+
+# Things we thought about
+- one backend failing out of several
 
 # Design
 - use of internal events, sdisruptor or eventbus
