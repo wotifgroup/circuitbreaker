@@ -1,4 +1,4 @@
-package com.wg.circuitbreaker;
+package com.wotifgroup.circuitbreaker;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
