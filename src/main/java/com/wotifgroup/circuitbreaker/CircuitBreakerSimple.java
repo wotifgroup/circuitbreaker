@@ -1,9 +1,12 @@
 package com.wotifgroup.circuitbreaker;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+
+import static com.wotifgroup.circuitbreaker.CircuitBreakerStatus.*;
+import static java.lang.String.format;
 /**
  * Simple Circuit Breaker based on the pattern in <a href="http://www.pragprog.com/titles/mnee">Release It!</a>
  * Which was also based on the Leaky Bucket Patter from PLOP 2.
@@ -12,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p/>
  * <pre>
  * state {closed, open, half-open}
- * may have lower numbers - no difference between timeout and connection refused
+ * may have lower numbers - no difference between retryInterval and connection refused
  * <p/>
  * when Circuit is Closed:
  * on call = pass through
@@ -27,22 +30,35 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p/>
  * when Circuit is Open
  * on call = return/fail
- * on timeout = attempt reset. Half-Open State
+ * on retryInterval = attempt reset. Half-Open State
  * <pre>
  */
 public class CircuitBreakerSimple implements CircuitBreaker {
 
+    private String name;
+    private String title;
     private int failureThreshold = 5;
+    private int retryInterval = 30000;
     private AtomicInteger failureCount = new AtomicInteger(0);
     private CircuitBreakerStatus state;
-    private int timeout = 30000;
-    private Logger LOG = LogManager.getLogger(CircuitBreakerSimple.class);
-
+    private long lastOpenTimestamp = Long.MAX_VALUE;
     /* if Open and this is in the future, next call after that time should allow a call */
     private long attemptResetAfter = 0;
 
+    private Logger LOG = LogManager.getLogger(CircuitBreakerSimple.class);
+
     public CircuitBreakerSimple() {
-        state = CircuitBreakerStatus.CLOSED;        
+        name = "CircuitBreaker";
+        state = CLOSED;
+    }
+
+    public CircuitBreakerSimple(String name, int failureThreshold, int timeout) {
+        this();
+        this.name = name;
+        this.title = name;
+        this.failureThreshold = failureThreshold;
+        this.retryInterval = timeout;
+
     }
 
     public CircuitBreakerSimple(int failureThreshold) {
@@ -50,8 +66,8 @@ public class CircuitBreakerSimple implements CircuitBreaker {
     }
 
     public CircuitBreakerStatus getState() {
-        if (CircuitBreakerStatus.OPEN.equals(state) && System.currentTimeMillis() >= attemptResetAfter) {
-            state = CircuitBreakerStatus.HALF_OPEN;
+        if (OPEN.equals(state) && System.currentTimeMillis() >= attemptResetAfter) {
+            state = HALF_OPEN;
         }
         return state;
     }
@@ -63,13 +79,13 @@ public class CircuitBreakerSimple implements CircuitBreaker {
      *
      * @return
      */
-    public int recordFailure() {
+    public int onFailure() {
         if (isClosed() || isHalfOpen()) {
             failureCount.incrementAndGet();
         }
 
         if (LOG.isTraceEnabled()) {
-            LOG.trace("failure count:" + failureCount);
+            LOG.trace(format("[%s] failure count: %d", name, failureCount));
         }
 
         if (isClosed() && (failureCount.intValue() > failureThreshold)) {
@@ -86,49 +102,62 @@ public class CircuitBreakerSimple implements CircuitBreaker {
 
     void setState(CircuitBreakerStatus state) {
         CircuitBreakerStatus priorState = this.state;
-
         if (this.state.equals(state)) {
             return;
         }
-
         this.state = state;
-        String msg = "Circuit Breaker, State change from:%s => %s";
-        LOG.info(String.format(msg, priorState, state));
+        LOG.info(format("[%s] %s => %s", name, priorState, state));
     }
 
     public void reset() {
-        setState(CircuitBreakerStatus.CLOSED);
+        setState(CLOSED);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Circuit Breaker reset");
+            LOG.debug(format("[%s] reset", name));
         }
         failureCount.getAndSet(0);
     }
 
     public void tripBreaker() {
-        tripBreaker(timeout);
+        tripBreaker(retryInterval);
     }
 
     public void tripBreaker(int timeout) {
-        this.attemptResetAfter = System.currentTimeMillis() + timeout;
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("trip breaker, allow Half-Open after: " + timeout);
-        }
-        setState(CircuitBreakerStatus.OPEN);
+        lastOpenTimestamp = System.currentTimeMillis();
+        attemptResetAfter = lastOpenTimestamp + timeout;
+        LOG.info(format("[%s] tripped, HALF-OPEN in %d", name, timeout));
+        setState(OPEN);
+
     }
 
     public int getFailureCount() {
         return failureCount.intValue();
     }
 
-    public int getTimeout() {
-        return timeout;
+    public int getRetryInterval() {
+        return retryInterval;
     }
 
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
+    public void setRetryInterval(int retryInterval) {
+        this.retryInterval = retryInterval;
     }
 
-    public void recordSuccess() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void onSuccess() {
         if (!isClosed()) {
             reset();
             return;
@@ -137,29 +166,37 @@ public class CircuitBreakerSimple implements CircuitBreaker {
         if (isClosed() && failureCount.intValue() > 0) {
             failureCount.getAndSet(0);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("failure count reset. ");
+                LOG.debug(format("[%s] reset", name));
             }
         }
     }
 
-    public int recordFailure(String type) {
-        return recordFailure();
+    public int onFailure(String type) {
+        return onFailure();
     }
 
 
     public boolean isClosed() {
-        return CircuitBreakerStatus.CLOSED.equals(state);
+        return CLOSED.equals(state);
     }
 
     public boolean isHalfOpen() {
-        return CircuitBreakerStatus.HALF_OPEN.equals(getState());
+        return HALF_OPEN.equals(getState());
     }
 
     public boolean isOpen() {
-        return CircuitBreakerStatus.OPEN.equals(state);
+        return OPEN.equals(state);
     }
 
     public boolean isCallable() {
         return isClosed() || isHalfOpen();
+    }
+
+    public int getFailureThreshold() {
+        return failureThreshold;
+    }
+
+    public long getLastOpenTimestamp() {
+        return lastOpenTimestamp;
     }
 }

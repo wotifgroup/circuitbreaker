@@ -26,19 +26,19 @@ public class CircuitBreakerSimpleTest {
     public void testShouldSilentlyIgnoreFailureRecordingIfCircuitBreakerIsOpen() {
         cb.tripBreaker();
         assertEquals(0, cb.getFailureCount());
-        cb.recordFailure();
+        cb.onFailure();
         assertEquals(0, cb.getFailureCount());
     }
 
     @Test
     public void testShouldTripBreakerWhenFailureThresholdExceeded() {
-        cb.recordFailure();
-        cb.recordFailure();
-        cb.recordFailure();
-        cb.recordFailure();
-        cb.recordFailure();
+        cb.onFailure();
+        cb.onFailure();
+        cb.onFailure();
+        cb.onFailure();
+        cb.onFailure();
         assertEquals(cb.getState(), CircuitBreakerStatus.CLOSED);
-        cb.recordFailure();
+        cb.onFailure();
         assertEquals(cb.getState(), CircuitBreakerStatus.OPEN);
     }
 
@@ -60,7 +60,7 @@ public class CircuitBreakerSimpleTest {
     @Test
     public void testShouldTripBreakerWhenFailureCallMadeInHalfOpenState() {
         cb.setState(CircuitBreakerStatus.HALF_OPEN);
-        cb.recordFailure();
+        cb.onFailure();
         assertEquals(cb.getState(), CircuitBreakerStatus.OPEN);
         //todo - check timeout correctly applied
 //        assertEquals(cb.getNextAttemptStart, CircuitBreakerStatus.java.OPEN);
@@ -70,7 +70,7 @@ public class CircuitBreakerSimpleTest {
     @Test
     public void testShouldAttemptResetWhenSuccessfulCallMadeInHalfOpenState() {
         cb.setState(CircuitBreakerStatus.HALF_OPEN);
-        cb.recordSuccess();
+        cb.onSuccess();
         assertEquals(cb.getState(), CircuitBreakerStatus.CLOSED);
 
     }

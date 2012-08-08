@@ -16,10 +16,12 @@ public interface CircuitBreaker {
 
     boolean isHalfOpen();
 
-    void recordSuccess();
+    void onSuccess();
 
-    int recordFailure();
+    int onFailure();
 
-    int recordFailure(String type);
+    int onFailure(String type);
+
+    long getLastOpenTimestamp = 0;
 
 }

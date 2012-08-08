@@ -2,7 +2,6 @@ package com.wotifgroup.circuitbreaker;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.databene.contiperf.PerfTest;
-import org.databene.contiperf.Required;
 import org.databene.contiperf.junit.ContiPerfRule;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,19 +14,17 @@ public class CircuitBreakerMultiThreadedExerciseTest {
         private Random rnd = new Random();
         private static final Logger LOG = LogManager.getLogger(CircuitBreakerSimple.class);
 
-
         @Before
         public void onSetup() {
             cb = new CircuitBreakerSimple();
-            cb.setTimeout(10);
+            cb.setRetryInterval(10);
         }
-
 
         @Rule
         public ContiPerfRule i = new ContiPerfRule();
 
         public CircuitBreakerMultiThreadedExerciseTest() {
-            super();    //To change body of overridden methods use File | Settings | File Templates.
+            super();
         }
 
         /**
@@ -39,11 +36,9 @@ public class CircuitBreakerMultiThreadedExerciseTest {
         public void testCircuitBreakerIsClosedOnInit() throws InterruptedException {
             int nextInt = rnd.nextInt(10);
             if (nextInt < 3) {
-                LOG.info("success");
-                cb.recordSuccess();
-            }
-            else {
-                cb.recordFailure();
+                cb.onSuccess();
+            } else {
+                cb.onFailure();
             }
         }
 
