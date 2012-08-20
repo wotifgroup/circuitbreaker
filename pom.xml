@@ -18,11 +18,12 @@
             <name>Sonatype Nexus Snapshots</name>
             <url>http://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
-<!--         <repository>
-            <id>repo.codahale.com</id>
-            <url>http://repo.codahale.com/</url>
-        </repository>
- -->    </repositories>
+        <!--         <repository>
+                   <id>repo.codahale.com</id>
+                   <url>http://repo.codahale.com/</url>
+               </repository>
+        -->
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -31,6 +32,11 @@
             <version>13.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>2.0.0</version>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
@@ -41,6 +47,16 @@
             <groupId>com.yammer.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
             <version>${dropwizard.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yammer.dropwizard</groupId>
+            <artifactId>dropwizard-client</artifactId>
+            <version>${dropwizard.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -108,7 +124,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.wg.circuitbreaker.CircuitBreakerService</mainClass>
+                                    <mainClass>com.wotifgroup.circuitbreaker.CircuitBreakerService</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -135,6 +151,24 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.4.0</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Default</threshold>
+                    <xmlOutput>true</xmlOutput>
+                    <excludeFilterFile>${basedir}/findbugs-exclude.xml</excludeFilterFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
     </build>

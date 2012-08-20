@@ -1,4 +1,8 @@
 package com.wotifgroup.circuitbreaker;
 
-public class Command {
+/**
+ * Dummy command
+ */
+public class Command implements ICommand {
+
 }
