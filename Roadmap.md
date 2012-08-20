@@ -6,21 +6,20 @@ Based on Michael Nygard's work from Release It!
 - Policies determine the failure state handling, the testing during half-open state
 - Failure hanlding if OPEN is managed by the callee
 
-# Things I always hated
+# Monitoring and alerting annoyances
 - static guesses of thresholds, in a complex world
 - accumulative affect of thresholds
-- information to adjust the hard thresholds
+- dealing with false positives of true negatives
+- how do you gather the information to adjust the hard thresholds
 - half-open policies that don't have a stance (aggressive, wait_for_a_human...)
 - don't fill logs
-- do some sampling
-- flapping, one bad service, with a failing health-monitor
+- allow tuning of samples (not just on or off 100%) and sample types to reduce the overhead
 - esper, or an esper-like evaluation
-- publish state, or publish gauge of state change
+- publish state, or publish gauge of state change, to zookeeper
 - report outage times
-- publish states to zookeeper
 
-# Things we thought about
-- one backend failing out of several
+# Things a circuit breaker should be tolerant of
+- flapping, one bad service, with a failing health-monitor
 
 # Design
 - use of internal events, sdisruptor or eventbus

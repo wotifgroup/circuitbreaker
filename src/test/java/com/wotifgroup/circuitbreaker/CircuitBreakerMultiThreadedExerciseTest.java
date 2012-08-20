@@ -12,7 +12,6 @@ import java.util.Random;
 public class CircuitBreakerMultiThreadedExerciseTest {
         private CircuitBreakerSimple cb;
         private Random rnd = new Random();
-        private static final Logger LOG = LogManager.getLogger(CircuitBreakerSimple.class);
 
         @Before
         public void onSetup() {
