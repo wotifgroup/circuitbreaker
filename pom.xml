@@ -9,7 +9,7 @@
     <name>circuitbreaker</name>
     <description>Circuit Breaker</description>
     <properties>
-        <dropwizard.version>0.5.0-SNAPSHOT</dropwizard.version>
+        <dropwizard.version>0.5.1</dropwizard.version>
         <jetty.version>8.1.5.v20120716</jetty.version>
     </properties>
     <repositories>
