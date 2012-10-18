@@ -1,7 +1,7 @@
 package com.wotifgroup.circuitbreaker;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,7 +45,7 @@ public class CircuitBreakerSimple implements CircuitBreaker {
     /* if Open and this is in the future, next call after that time should allow a call */
     private long attemptResetAfter = 0;
 
-    private Logger LOG = LogManager.getLogger(CircuitBreakerSimple.class);
+    private Logger LOG = LoggerFactory.getLogger(CircuitBreakerSimple.class);
 
     public CircuitBreakerSimple() {
         name = "CircuitBreaker";
