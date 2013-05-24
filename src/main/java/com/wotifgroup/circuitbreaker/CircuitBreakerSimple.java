@@ -62,6 +62,7 @@ public class CircuitBreakerSimple implements CircuitBreaker {
     }
 
     public CircuitBreakerSimple(int failureThreshold) {
+        this();
         this.failureThreshold = failureThreshold;
     }
 
