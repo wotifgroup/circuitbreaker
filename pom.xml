@@ -8,10 +8,13 @@
     <version>0.1.0-SNAPSHOT</version>
     <name>circuitbreaker</name>
     <description>Circuit Breaker</description>
+    <url>http://github.com/wotifgroup/circuitbreaker/</url>
+    <packaging>jar</packaging>
     <properties>
         <dropwizard.version>0.5.1</dropwizard.version>
         <jetty.version>8.1.5.v20120716</jetty.version>
         <slf4j.version>1.6.6</slf4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <repositories>
         <repository>
@@ -26,6 +29,13 @@
         </repository>
     -->
     </repositories>
+
+    <scm>
+        <connection>scm:git:git://github.com/wotifgroup/circuitbreaker.git</connection>
+        <developerConnection>scm:git:git@github.com:wotifgroup/circuitbreaker.git</developerConnection>
+        <url>http://github.com/wotifgroup/circuitbreaker/</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <dependencies>
         <dependency>
