@@ -8,10 +8,13 @@
     <version>0.1.0-SNAPSHOT</version>
     <name>circuitbreaker</name>
     <description>Circuit Breaker</description>
+    <url>http://github.com/wotifgroup/circuitbreaker/</url>
+    <packaging>jar</packaging>
     <properties>
         <dropwizard.version>0.5.1</dropwizard.version>
         <jetty.version>8.1.5.v20120716</jetty.version>
         <slf4j.version>1.6.6</slf4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <repositories>
         <repository>
@@ -19,12 +22,20 @@
             <name>Sonatype Nexus Snapshots</name>
             <url>http://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
-        <!--         <repository>
-                   <id>repo.codahale.com</id>
-                   <url>http://repo.codahale.com/</url>
-               </repository>
-        -->
+    <!--
+        <repository>
+            <id>repo.codahale.com</id>
+            <url>http://repo.codahale.com/</url>
+        </repository>
+    -->
     </repositories>
+
+    <scm>
+        <connection>scm:git:git://github.com/wotifgroup/circuitbreaker.git</connection>
+        <developerConnection>scm:git:git@github.com:wotifgroup/circuitbreaker.git</developerConnection>
+        <url>http://github.com/wotifgroup/circuitbreaker/</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -99,6 +110,15 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.5</version>
                 <configuration>
@@ -143,29 +163,24 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- You'll probably want to remove this for your project. I'm just using it here
-                     so that dropwizard-example doesn't get deployed as a library. -->
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <skip>true</skip>
-                    <skipDeploy>true</skipDeploy>
-                </configuration>
-            </plugin>
+
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.4.0</version>
+                <version>2.5.2</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Default</threshold>

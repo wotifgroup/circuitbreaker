@@ -1,6 +1,6 @@
-.class
+*.class
 target/**
 .idea
 logs
-.iml
+*.iml
 

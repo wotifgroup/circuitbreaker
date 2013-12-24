@@ -11,7 +11,7 @@ import static java.lang.String.format;
  * Simple Circuit Breaker based on the pattern in <a href="http://www.pragprog.com/titles/mnee">Release It!</a>
  * Which was also based on the Leaky Bucket Patter from PLOP 2.
  * <p/>
- * This class explicity has no synchronisation, run the exerciser to see how some recorded successes or failures get lost.
+ * This class explicitly has no synchronisation, run the exerciser to see how some recorded successes or failures get lost.
  * <p/>
  * <pre>
  * state {closed, open, half-open}
@@ -86,7 +86,7 @@ public class CircuitBreakerSimple implements CircuitBreaker {
         }
 
         if (LOG.isTraceEnabled()) {
-            LOG.trace(format("[%s] failure count: %d", name, failureCount));
+            LOG.trace(format("[%s] failure count: %d", name, failureCount.get()));
         }
 
         if (isClosed() && (failureCount.intValue() > failureThreshold)) {

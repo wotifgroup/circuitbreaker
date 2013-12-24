@@ -52,7 +52,7 @@ public class HttpGatewayCircuitBreakerTest {
 //  These interactions are for another abstraction
     @Ignore
     public void originServerResponseOf500IsPassedThruAndUpdatesCircuitBreakerFailureCount() {
-        assertTrue(HttpURLConnection.HTTP_SERVER_ERROR == gw.execute(new Command()));
+        assertTrue(HttpURLConnection.HTTP_INTERNAL_ERROR == gw.execute(new Command()));
     }
 
     @Test
