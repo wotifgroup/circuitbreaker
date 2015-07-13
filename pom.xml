@@ -10,6 +10,19 @@
     <description>Circuit Breaker</description>
     <url>http://github.com/wotifgroup/circuitbreaker/</url>
     <packaging>jar</packaging>
+    <inceptionYear>2012</inceptionYear>
+
+    <organization>
+        <name>Wotif Group</name>
+        <url>http://www.wotifgroup.com</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
     <properties>
         <dropwizard.version>0.5.1</dropwizard.version>
         <jetty.version>8.1.5.v20120716</jetty.version>
@@ -108,6 +121,24 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.7</version>
+                <configuration>
+                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                    <licenseName>apache_v2</licenseName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>check-file-header</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
